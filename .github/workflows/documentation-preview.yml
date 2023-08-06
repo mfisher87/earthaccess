@@ -60,8 +60,9 @@ jobs:
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Thank you for requesting a documentation change!
+          body: >
+            :wave: :tada: Thank you for requesting a documentation change!
+
 
             A user with "member", "owner", or "collaborator" role can trigger a
             preview deployment of these changes by creating a comment that
