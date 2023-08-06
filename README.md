@@ -28,6 +28,8 @@
 
 ## **Overview**
 
+Just foolin' around locally!
+
 *earthaccess* is a **python library to search, download or stream NASA Earth science data** with just a few lines of code.
 
 
