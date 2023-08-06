@@ -149,11 +149,11 @@ jobs:
         uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ github.event.comment.id }}
-          reactions: x
+          reactions: -1
 
       - name: Add "finished" reaction to command comment
         if: github.event_name == 'issue_comment'
         uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ github.event.comment.id }}
-          reactions: heavy_check_mark
+          reactions: rocket
