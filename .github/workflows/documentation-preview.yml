@@ -15,14 +15,22 @@ on:
   # secrets, but not to the untrusted code changes. This is the reason for the
   # `issue_comment` trigger.
   pull_request:
-    paths:
+    paths: &pr-paths
       - earthaccess/**
       - tests/**
       - docs/**
       - notebooks/**
       - .github/workflows/documentation.yml
     types: [opened, synchronize]
-    branches: [main]
+    branches: &pr-branches
+      - main
+
+  # For writing an automatic comment to new docs PRs from forks:
+  # https://github.com/peter-evans/create-or-update-comment
+  pull_request_target:
+    types: [opened]
+    paths: *pr-paths
+    branches: *pr-branches
 
   # This workflow can be manually triggered by an authorized user's
   # `/deploy-docs-preview` command in a comment.
@@ -32,16 +40,14 @@ on:
 
 jobs:
 
-  # TODO: This job currently passes even though we're displaying an "error".
-  # Should it instead fail to draw attention? Or post a comment? 
   detect-pr-from-fork-and-prompt-for-preview-command:
     name: Detect PRs from forks and prompt reviewer to trigger manual preview
     # NOTE: Our "fork-check" logic checks if the source repo equals target
-    # repo.  Using `github.event.pull_request.head.repo.fork != true` causes
+    # repo. Using `github.event.pull_request.head.repo.fork != true` causes
     # this workflow to fail in forks that open PRs against themselves (e.g. to
     # test CI configuration!)
     if: |
-      github.event_name == 'pull_request'
+      github.event_name == 'pull_request_target'
       && github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +66,7 @@ jobs:
   deploy-documentation-preview:
     name: Build documentation and deploy to Netlify preview URL
     runs-on: ubuntu-latest
-    # Do this job if:
+    # Deploy if:
     # - event is a PR that's _not_ from a fork, OR
     # - event is a `/deploy-docs-preview` command from an authorized user
     if: |
@@ -70,7 +76,8 @@ jobs:
       )
       ||
       (
-        github.event.issue.pull_request
+        github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
         && startsWith(github.event.comment.body, '/deploy-docs-preview')
         &&
         (
