@@ -55,8 +55,6 @@ jobs:
         shell: bash
 
 
-  # TODO: If this job is triggered by a command, then react to that command to
-  # indicate that CI is working on it, and then react again when done.
   deploy-documentation-preview:
     name: Build documentation and deploy to Netlify preview URL
     runs-on: ubuntu-latest
@@ -80,6 +78,13 @@ jobs:
         )
       )
     steps:
+      - name: Add "working" reaction to command comment
+        if: github.event_name == 'issue_comment'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: eyes
+
       # WARNING: WET floor - this is identical to documentation.yml. Try a
       # local composite action?
       - uses: actions/checkout@v3
@@ -138,3 +143,17 @@ jobs:
           alias: ${{ github.event.repository.name}}-pr-${{ github.event.pull_request.number }}-preview
           enable-commit-comment: false
         timeout-minutes: 1
+
+      - name: Add "failed" reaction to command comment
+        if: failure() && github.event_name == 'issue_comment'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: x
+
+      - name: Add "finished" reaction to command comment
+        if: github.event_name == 'issue_comment'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: heavy_check_mark
