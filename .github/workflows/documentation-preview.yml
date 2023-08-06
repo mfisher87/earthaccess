@@ -45,14 +45,16 @@ jobs:
       && github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
-      - name: Prompt reviewer to trigger manual preview
-        run: >
-          echo "::error title=Manual action required for PR preview:: A PR from
-          fork can't be previewed automatically for security reasons. A
-          member, owner, or collaborator must check this PR for shenanigans
-          and then use '/deploy-docs-preview' command in comments to trigger
-          the preview manually."
-        shell: bash
+      - name: Prompt reviewer to trigger preview
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Thank you for requesting a documentation change!
+
+            A user with "member", "owner", or "collaborator" role can trigger a
+            preview deployment of these changes by creating a comment that
+            starts with `/deploy-docs-preview`.
 
 
   deploy-documentation-preview:
