@@ -124,19 +124,13 @@ flowchart TD
   start == YES ==> dupe{Is duplicate?}
   dupe == YES ==> close2[Close and point to duplicate]
   dupe == NO ==> repro{Has proper reproduction?}
-  repro == NO ==> close3[Label: 'needs reproduction' bot will auto close if no update has been made in 3 days]
-  repro == YES ==> real{Is actually a bug?}
-  real == NO ==> intended{Is the intended behaviour?}
-  intended == YES ==> explain[Explain and close point to docs if needed]
-  intended == NO ==> open[Keep open for discussion Remove 'pending triage' label]
-  real == YES ==> real2["1. Remove 'pending triage' label 2. Add related feature label if applicable (e.g. 'feat: ssr') 3. Add priority and meta labels (see below)"]
-  real2 ==> unusable{Does the bug make earthaccess unusable?}
-  unusable == YES ==> maj{Does the bug affect the majority of earthaccess users?}
-  maj == YES ==> p5[p5: urgent]
-  maj == NO ==> p4[p4: important]
-  unusable == NO ==> workarounds{Are there workarounds for the bug?}
-  workarounds == NO ==> p3[p3: minor bug]
-  workarounds == YES ==> p2[p2: edge case has workaround]
+  repro == NO ==> close3[Label: 'needs: feedback requested' and request reproduction from
+  reporter]
+
+  repro == YES ==> bug{Is actually a bug?}
+  bug == NO ==> explain[Explain and close point to docs if needed]
+
+  bug == YES ==> real2["Add 'type: bug' label"]
 
   %% Link Color %%
     linkStyle default stroke:black,stroke-width:2px,font-size:24pt;
